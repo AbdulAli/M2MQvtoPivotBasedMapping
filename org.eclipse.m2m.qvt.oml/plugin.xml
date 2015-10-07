@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension-point id="unitResolverFactory" name="Unit Resolver Factory" schema="schema/unitResolverFactory.exsd"/>
+   <extension-point id="blackboxProvider" name="Black box provider" schema="schema/blackboxProviders.exsd"/>
+   <extension-point id="javaBlackboxUnits" name="Java blackbox compilation units" schema="schema/javaBlackboxUnits.exsd"/>
+    
+ <extension name="Java bundle blackbox implementation provider" point="org.eclipse.m2m.qvt.oml.blackboxProvider">
+    <provider
+          class="org.eclipse.m2m.internal.qvt.oml.blackbox.java.BundleBlackboxProvider">
+    </provider>
+ </extension>
+ 
+ <extension point="org.eclipse.emf.ecore.generated_package">
+   <package 
+      uri = "http:///www.eclipse.org/m2m/qvt/operational/trace.ecore" 
+      class = "org.eclipse.m2m.internal.qvt.oml.trace.TracePackage"
+      genModel = "model/trace.genmodel" /> 
+ </extension>
+ 
+ <extension point="org.eclipse.emf.ecore.generated_package">
+   <package 
+      uri = "http://www.eclipse.org/qvt/1.0.0/Operational/Expressions" 
+      class = "org.eclipse.m2m.internal.qvt.oml.expressions.ExpressionsPackage"
+      genModel = "model/QVTOperational.genmodel" /> 
+ </extension>
+                                                          
+  <extension point="org.eclipse.emf.ecore.uri_mapping">
+     <mapping
+           source="http://www.eclipse.org/m2m/qvt/oml/1.0.0/Stdlib"
+           target="platform:/plugin/org.eclipse.m2m.qvt.oml/model/Stdlib.xmi">
+     </mapping>
+  </extension>
+  <extension
+        point="org.eclipse.emf.ecore.protocol_parser">
+     <parser
+           class="org.eclipse.m2m.internal.qvt.oml.blackbox.java.BlackboxResourceFactory"
+           protocolName="qvto">
+     </parser>
+  </extension>
+  
+  <extension point="org.eclipse.emf.ecore.extension_parser">
+     <parser type="qvtox" class="org.eclipse.m2m.internal.qvt.oml.compiler.ExeXMIResource$Factory"/>    
+  </extension> 
+  
+  <extension point="org.eclipse.m2m.qvt.oml.unitResolverFactory">
+	 <factory class="org.eclipse.m2m.internal.qvt.oml.compiler.BlackboxUnitResolverFactory"/>
+  </extension> 
+  
+</plugin>

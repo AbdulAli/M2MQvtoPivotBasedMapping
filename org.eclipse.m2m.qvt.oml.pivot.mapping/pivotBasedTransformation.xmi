@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ASCII"?>
+<qvtoperational:OperationalTransformation xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:qvtoperational="http://www.eclipse.org/qvt/pivot/1.0/QVTOperational">
+  <ownedOperations xsi:type="qvtoperational:Helper" name="package2schemas" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="class2foreignKeys" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="class2columns" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="dataType2columns" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="dataType2primaryKeyColumns" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="primitiveAttributes2columns" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="enumerationAttributes2columns" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="relationshipAttributes2columns" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="assosiationAttributes2columns" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="generalizations2columns" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="getSubpackages" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="asDataType" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="isPrimaryKey" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="isIdentifying" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="isPrimitive" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="isEnumeration" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="isRelationship" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="isAssosiation" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="getPrimaryKeyColumns" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="isPersistent" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:Helper" name="hasPersistentClasses" implementationClass="org.eclipse.qvto.examples.pivot.qvtoperational.impl.HelplerImpl"/>
+  <ownedOperations xsi:type="qvtoperational:MappingOperation" name="main" implementationClass="org.eclipse.m2m.internal.qvt.oml.expressions.impl.MappingOperationImpl"/>
+  <ownedOperations xsi:type="qvtoperational:MappingOperation" name="package2schema" implementationClass="org.eclipse.m2m.internal.qvt.oml.expressions.impl.MappingOperationImpl"/>
+  <ownedOperations xsi:type="qvtoperational:MappingOperation" name="persistentClass2table" implementationClass="org.eclipse.m2m.internal.qvt.oml.expressions.impl.MappingOperationImpl"/>
+  <ownedOperations xsi:type="qvtoperational:MappingOperation" name="class2primaryKey" implementationClass="org.eclipse.m2m.internal.qvt.oml.expressions.impl.MappingOperationImpl"/>
+  <ownedOperations xsi:type="qvtoperational:MappingOperation" name="primitiveAttribute2column" implementationClass="org.eclipse.m2m.internal.qvt.oml.expressions.impl.MappingOperationImpl"/>
+  <ownedOperations xsi:type="qvtoperational:MappingOperation" name="enumerationAttribute2column" implementationClass="org.eclipse.m2m.internal.qvt.oml.expressions.impl.MappingOperationImpl"/>
+  <ownedOperations xsi:type="qvtoperational:MappingOperation" name="relationshipAttribute2foreignKey" implementationClass="org.eclipse.m2m.internal.qvt.oml.expressions.impl.MappingOperationImpl"/>
+</qvtoperational:OperationalTransformation>

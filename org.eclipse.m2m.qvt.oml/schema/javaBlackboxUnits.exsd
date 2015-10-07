@@ -1,0 +1,194 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.m2m.qvt.oml" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.m2m.qvt.oml" id="javaBlackboxUnits" name="Java black-box units"/>
+      </appInfo>
+      <documentation>
+         This extension point provides a mechanism for contributing QVT black-box units. Conceptually, it corresponds to QVT compilation units (OMG spec 7.13.1), though it rather represents sort of deployment unit as there is no concrete syntax source file to compile. Instead, the source is represented by a Java class, which realizes the top level unit elements using Java language constructs mapped to corresponding QVT counterpart elements.&lt;/br&gt;&lt;/br&gt;
+See the details on the Java implementation class format at &lt;a href=&quot;../blackboxing.html&quot;&gt;Java black-box to QVT mappings&lt;/a&gt;.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+         <documentation>
+            Extension point to register QVT black-box unit of Java implementations
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <choice minOccurs="1" maxOccurs="unbounded">
+               <element ref="unit"/>
+               <element ref="library"/>
+            </choice>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="unit">
+      <annotation>
+         <documentation>
+            A deployment unit that can define mutliple libraries or transformations, a conceptual analogy to &lt;code&gt;compilation unit&lt;/code&gt; defined in QVT specification.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="library"/>
+         </sequence>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Simple name of the black-box unit. Along with the &lt;b&gt;namespace&lt;/b&gt;, it composes the qualified name of the unit referenceable from import statements.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="namespace" type="string">
+            <annotation>
+               <documentation>
+                  Namespace in which this blackbox unit is defined. If not specified, the identifier of the owning plugin will be used.
+Along with the &lt;b&gt;name&lt;/b&gt;, it composes the qualified name of the unit referenceable from import statements.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  A textual description of this unit element, typically used by a tooling support
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="library">
+      <annotation>
+         <documentation>
+            A library module which defines its operations in the associated implementation class and is defined in a deployment unit.&lt;br/&gt;
+In order to facilitate the common case of a single library per unit, a simplified definition is supported to help in reducing verbosity. In this case no explicit owning unit needs to be defined and the library element can be defined as standalone.
+Corresponding implicit unit is synthesized based on the implementation class and inherits its qualified name.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="metamodel" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  Name of the library representing the module name resolveable in QVT. If not specified, the simple name of the class will be used.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The implementation class of the library (see &lt;a href=&quot;../blackboxing.html&quot;&gt;Java black-box to QVT mappings&lt;/a&gt;)
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="metamodel">
+      <annotation>
+         <documentation>
+            Specifies a metamodel used by a declared library, being a part of that library signature.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="nsURI" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The namespace URI of the metamodel package.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         2.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;p&gt;
+The following examples registers the &lt;code&gt;ExampleJavaLib&lt;/code&gt; black-box unit, which is resolvable as 
+&lt;code&gt;m2m.qvt.oml.ExampleJavaLib&lt;/code&gt; from importing QVT modules.&lt;/br&gt;
+It defines the QVT library resolveable by name &lt;code&gt;UtilLib&lt;/code&gt;, implemented in the
+&lt;code&gt;org.eclipse.m2m.qvt.oml.examples.blackbox.UtilitiesLibrary&lt;/code&gt; class.&lt;/br&gt;
+The library operation reference types defined in the &lt;code&gt;Ecore&lt;/code&gt; metamodel.
+&lt;/p&gt;
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.m2m.qvt.oml.javaBlackboxUnits&quot;&gt;
+  &lt;unit name=&quot;ExampleJavaLib&quot; namespace=&quot;m2m.qvt.oml&quot;&gt;
+    &lt;library name=&quot;UtilLib&quot; 
+             class=&quot;org.eclipse.m2m.qvt.oml.examples.blackbox.UtilitiesLibrary&quot;&gt;
+      &lt;metamodel nsURI=&quot;http://www.eclipse.org/emf/2002/Ecore&quot;/&gt;
+    &lt;/library&gt;
+  &lt;/unit&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2008 Borland Software Corporation
+ 
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+&lt;a href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
+      </documentation>
+   </annotation>
+
+</schema>

@@ -1,0 +1,156 @@
+transformation Simpleuml_To_Rdb;
+
+modeltype A uses 'http://www.eclipse.org/qvt/1.0.0/Operational/examples/simpleuml';
+modeltype B uses 'http://www.eclipse.org/qvt/1.0.0/Operational/examples/rdb';
+
+mapping main(in model: simpleuml::Model) : rdb::Model {
+	name := model.name;
+	schemas := package2schemas(model);
+}
+
+query package2schemas(in root: simpleuml::Package) : OrderedSet(rdb::Schema) {
+	package2schema(root)->
+		union(root.getSubpackages()->collect(p | package2schemas(p))->asOrderedSet())->asOrderedSet()
+}
+
+mapping package2schema(in pack: simpleuml::Package) : rdb::Schema 
+	when { pack.hasPersistentClasses() }
+{
+	name := pack.name;
+	elements := pack.ownedElements->select(oclIsKindOf(simpleuml::Class))->
+		collect(c | c.oclAsType(simpleuml::Class).persistentClass2table())->asOrderedSet()
+}
+
+mapping simpleuml::Class::persistentClass2table() : rdb::Table 
+	when { self.isPersistent() }
+{
+	name := self.name;
+	columns := class2columns(self);
+	primaryKey := self.class2primaryKey();
+	foreignKeys := class2foreignKeys(self);
+}
+
+mapping simpleuml::Class::class2primaryKey() : rdb::constraints::PrimaryKey {
+	name := 'PK'.concat(self.name);
+	includedColumns := self.resolveIn(simpleuml::Class::persistentClass2table, rdb::Table)->any(true).getPrimaryKeyColumns()
+}
+
+query class2foreignKeys(in cls: simpleuml::Class) : OrderedSet(rdb::constraints::ForeignKey) {
+	cls.attributes->collect(resolveIn(simpleuml::Property::relationshipAttribute2foreignKey, rdb::constraints::ForeignKey))->
+		asOrderedSet()
+}
+
+query class2columns(in cls: simpleuml::Class) : OrderedSet(rdb::TableColumn) {
+	dataType2columns(cls)->
+		union(generalizations2columns(cls))->asOrderedSet()
+}
+
+query dataType2columns(in dt: simpleuml::DataType) : OrderedSet(rdb::TableColumn) {
+	primitiveAttributes2columns(dt)->
+		union(enumerationAttributes2columns(dt))->
+		union(relationshipAttributes2columns(dt))->
+		union(assosiationAttributes2columns(dt))->asOrderedSet()
+}
+
+query dataType2primaryKeyColumns(in dt: simpleuml::DataType, in prefix : String, in leaveIsPrimaryKey : Boolean) : OrderedSet(rdb::TableColumn) {
+	dataType2columns(dt)->select(isPrimaryKey)->
+		collect(c | object rdb::TableColumn {
+			name := prefix.concat('_').concat(c.name);
+			domain := c.domain;
+			type := c.type;
+			isPrimaryKey := leaveIsPrimaryKey
+		})->asOrderedSet()
+}
+
+query primitiveAttributes2columns(in dt: simpleuml::DataType) : OrderedSet(rdb::TableColumn) {
+	dt.attributes->collect(a | primitiveAttribute2column(a))->asOrderedSet()
+}
+
+mapping primitiveAttribute2column(in prop: simpleuml::Property) : rdb::TableColumn 
+	when { prop.isPrimitive() }
+{
+	isPrimaryKey := prop.isPrimaryKey();
+	name := prop.name;
+	type := object rdb::datatypes::PrimitiveDataType { name := prop.type.name; };
+}
+
+query enumerationAttributes2columns(in dt: simpleuml::DataType) : OrderedSet(rdb::TableColumn) {
+	dt.attributes->collect(a | enumerationAttribute2column(a))->asOrderedSet()
+}
+
+mapping enumerationAttribute2column(in prop: simpleuml::Property) : rdb::TableColumn 
+	when { prop.isEnumeration() }
+{
+	isPrimaryKey := prop.isPrimaryKey();	
+	name := prop.name;
+	type := object rdb::datatypes::PrimitiveDataType { name := 'Integer'; };
+}
+
+query relationshipAttributes2columns(in dt: simpleuml::DataType) : OrderedSet(rdb::TableColumn) {
+	dt.attributes->collect(a | a.relationshipAttribute2foreignKey())->
+		collect(includedColumns)->asOrderedSet();
+}
+
+mapping simpleuml::Property::relationshipAttribute2foreignKey() : rdb::constraints::ForeignKey 
+	when { self.isRelationship() }
+{
+	name := 'FK'.concat(self.name);
+	includedColumns := dataType2primaryKeyColumns(self.type.asDataType(), self.name, self.isIdentifying());
+	referredUC := self.type.late resolveoneIn(simpleuml::Class::class2primaryKey, rdb::constraints::PrimaryKey);
+}
+
+query assosiationAttributes2columns(in dt: simpleuml::DataType) : OrderedSet(rdb::TableColumn) {
+	dt.attributes->select(isAssosiation())->
+		collect(p | dataType2columns(p.type.asDataType()))->asOrderedSet()
+}
+
+query generalizations2columns(in cls: simpleuml::Class) : OrderedSet(rdb::TableColumn) {
+	cls.generalizations->collect(g | class2columns(g.general))->asOrderedSet()
+}
+
+query simpleuml::Package::getSubpackages() : OrderedSet(simpleuml::Package) {
+	self.ownedElements->collect(oclAsType(simpleuml::Package))->asOrderedSet()
+}
+
+query simpleuml::Type::asDataType() : simpleuml::DataType {
+	self.oclAsType(simpleuml::DataType)
+}
+
+query simpleuml::Property::isPrimaryKey() : Boolean {
+	self.stereotype->includes('primaryKey')
+}
+
+query simpleuml::Property::isIdentifying() : Boolean {
+	self.stereotype->includes('identifying')
+}
+
+query simpleuml::Property::isPrimitive() : Boolean {
+	self.type.oclIsKindOf(simpleuml::PrimitiveType)
+}
+
+query simpleuml::Property::isEnumeration() : Boolean {
+	self.type.oclIsKindOf(simpleuml::Enumeration)
+}
+
+query simpleuml::Property::isRelationship() : Boolean {
+	self.type.oclIsKindOf(simpleuml::DataType) and self.type.isPersistent()
+}
+
+query simpleuml::Property::isAssosiation() : Boolean {
+	self.type.oclIsKindOf(simpleuml::DataType) and not self.type.isPersistent()
+}
+
+query rdb::Table::getPrimaryKeyColumns() : OrderedSet(rdb::TableColumn) {
+	self.columns->select(isPrimaryKey)
+}
+
+query simpleuml::ModelElement::isPersistent() : Boolean {
+	self.stereotype->includes('persistent')
+}
+
+query simpleuml::Package::hasPersistentClasses() : Boolean {
+--	ownedElements->exists(e | e.oclIsKindOf(simpleuml::Class) 
+--		and e.oclAsType(simpleuml::Class).isPersistent())
+	self.ownedElements->select(oclIsKindOf(simpleuml::Class))->
+		select(c | c.oclAsType(simpleuml::Class).isPersistent())->size() > 0
+}
